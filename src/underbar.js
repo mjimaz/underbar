@@ -293,14 +293,19 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+      //for every new function (func), store the results of the call
       var previousResults = {};
 
       return function(){
-        if(!(func.toString() in previousResults)){
-          previousResults[func.toString()] = func.apply(this, arguments);
+        //to store arguments passed to it
+          var key = Array.prototype.slice.call(arguments);
+                 
+          
+        if(!(key in previousResults)){
+          previousResults[key] = func.apply(this, arguments);
         }
       
-        return previousResults[func.toString()];
+        return previousResults[key];
       };
   };
 
@@ -311,6 +316,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = Array.prototype.slice.call(arguments);
+    setTimeout(function(){return func.apply(this, args.slice(2));}, wait);
   };
 
 
@@ -325,6 +332,16 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    //reading: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Examples
+    var arrayCopy = array.slice();
+    var shuffledArray = [];
+    var j = arrayCopy.length, randomIndex;
+    for (var i = 0; i< j ; i++){            
+      randomIndex = Math.floor(Math.random() * arrayCopy.length);
+      shuffledArray.push(arrayCopy[randomIndex]);
+      arrayCopy.splice(randomIndex, 1); //remove element from array
+    }
+    return shuffledArray;
   };
 
 
@@ -339,6 +356,7 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+ 
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -354,6 +372,34 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var numOfArrays = arguments.length;
+    var result = new Array(numOfArrays), item;
+    var elementsAvailable;
+    var i,j, temp;
+    
+    for(j = 0; j<numOfArrays ; j++){
+        result[j] = new Array(1);
+    }
+    j=0;
+    do{
+      elementsAvailable = false;
+      temp = []; //temporary array to hold items
+    for(i = 0; i< numOfArrays; i++){
+    
+        //remove elements of each array on the argument
+      item = arguments[i].shift();
+      //add to temp array
+      temp.push(item);
+      if(item !== undefined){
+        elementsAvailable = true; //if any array arguments still have items, continue
+      }
+    }
+    if(elementsAvailable){
+        result[j++] = temp;
+    }
+    }while(elementsAvailable);
+
+    return result;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -361,6 +407,17 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    if(result === undefined){
+      result = [];
+    }
+    for(var i = 0 ; i < nestedArray.length ; i++){
+      if(!Array.isArray(nestedArray[i])){
+        result.push(nestedArray[i]);
+      }else{
+        _.flatten(nestedArray[i], result);
+      }
+    }
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
