@@ -356,7 +356,7 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
- 
+      
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -423,6 +423,54 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var results = [];
+    var numOfArrays = arguments.length;
+
+    //find the smallest array
+    var smallestArrayIndex = 0;
+    var smallestArrayLength = arguments[0].length;
+    for(var i = 1 ; i < numOfArrays ; i++){
+      if(arguments[i].length < smallestArrayLength){
+          smallestArrayIndex = i;
+          smallestArrayLength = arguments[i].length
+      }
+    }
+
+    var itemExist;
+    
+    for(var j = 0; j< arguments[smallestArrayIndex].length ; j++){
+      itemExist = 0;
+      //find common items in all arrays
+      for(var i = 0 ; i < numOfArrays ; i++){
+        //skip smallest array
+        if(i === smallestArrayIndex){
+          continue;
+        }
+
+        /*if(arguments[i].indexOf(arguments[smallestArrayIndex][j]) === -1){
+          itemExist = 0;
+          break;
+        }*/
+        for(var k = 0 ; k < arguments[i].length ; k++){
+          if(arguments[i][k] === arguments[smallestArrayIndex][j]){
+            itemExist = 1;
+            break;
+          }
+
+        }
+        //could not find item in any array
+        if(!itemExist){
+          break;
+        }
+      }
+
+      if(itemExist){
+        results.push(arguments[smallestArrayIndex][j]);
+      }
+    }
+
+    return results;
+    
   };
 
   // Take the difference between one array and a number of other arrays.
